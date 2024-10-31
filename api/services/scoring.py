@@ -176,9 +176,9 @@ class ScoringSystem:
                 score = final_scores[idx]
                 results.append(
                     CandidateScore(
-                        name=f"Candidate {self.candidates_df.iloc[idx]['Name']}",
+                        name=f"{self.candidates_df.iloc[idx]['Name']}",
                         score=round(min(score * 100, 100), 2),
-                        relevant_experience=str(self.candidates_df.iloc[idx]['Experiences'])[:200]
+                        relevant_experience=str(self.candidates_df.iloc[idx]['Experiences'])[:1500]
                     )
                 )
             
