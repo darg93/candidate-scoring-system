@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Scoring System</title>
+    <style>
+        body { max-width: 800px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif; }
+        textarea { width: 100%; margin: 10px 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f4f4f4; }
+    </style>
+</head>
+<body>
+    <h1>Candidate Scoring System</h1>
+    
+    <div>
+        <label for="jobDescription">Enter Job Description (max 200 characters):</label>
+        <textarea id="jobDescription" rows="4" maxlength="200"></textarea>
+        <button onclick="scoreCandidates()">Score Candidates</button>
+    </div>
+
+    <div id="results">
+        <table id="candidatesTable" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Score</th>
+                    <th>Relevant Experience</th>
+                </tr>
+            </thead>
+            <tbody id="candidatesBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        async function scoreCandidates() {
+            const description = document.getElementById('jobDescription').value;
+            const table = document.getElementById('candidatesTable');
+            const tbody = document.getElementById('candidatesBody');
+
+            try {
+                const response = await fetch('http://localhost:3000/score-candidates', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ description })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to score candidates');
+                }
+
+                const candidates = await response.json();
+                
+                // Clear previous results
+                tbody.innerHTML = '';
+                
+                // Add new results
+                candidates.forEach(candidate => {
+                    const row = tbody.insertRow();
+                    row.insertCell(0).textContent = candidate.name;
+                    row.insertCell(1).textContent = `${candidate.score}%`;
+                    row.insertCell(2).textContent = candidate.relevant_experience;
+                });
+
+                table.style.display = 'table';
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error scoring candidates. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>
